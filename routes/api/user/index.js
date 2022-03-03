@@ -1,47 +1,35 @@
+const router = require('express').Router();
+
 const {
-    Schema,
-    model
-} = require('mongoose');
-const moment = require('moment');
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  addToFriendList,
+  removefromFriendList
+} = require('../../../controllers/userController.js');
 
-const UserSchema = new Schema({
-    username: {
-        type: String,
-        unique: true,
-        required: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: [true, 'User email address required'],
-        unique: true,
-        validate: {
-            validator: function (v) {
-                return /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(v);
-            },
-            message: props => `${props.value} is not a valid email address!`
-        },
-    },
-    thoughts: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Thought'
-    }],
-    friends: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }]
-}, {
-    toJSON: {
-        virtuals: true,
-        getters: true
-    },
-    id: false
-});
+// Set up GET all and POST at /api/users. Provide name of controller as callback
+router
+  .route('/')
+  .get(getAllUsers)
+  .post(createUser);
 
-UserSchema.virtual('friendCount').get(function () {
-    return this.friends.length;
-});
+// Set up GET one, PUT, and DELETE at /api/users/<id>
+router
+  .route('/:id')
+  .get(getUserById)
+  .put(updateUser)
+  .delete(deleteUser);
 
-const User = model('User', UserSchema);
+router
+  .route('/:userId/friends/:friendId')
+  .post(addToFriendList);
 
-module.exports = User;
+
+router
+  .route('/:userId/friends/:friendId')
+  .delete(removefromFriendList);
+
+module.exports = router;
