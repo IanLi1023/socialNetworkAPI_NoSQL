@@ -1,11 +1,16 @@
-const {
-    Schema,
-    Types
-} = require('mongoose');
+const {Schema, Types} = require('mongoose');
 const moment = require('moment');
 
 const reactionSchema = new Schema({
     //set id to avoid mix up with parent thought id
+    userId: {
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	},
+    username: {
+        type: String,
+        required: true
+    },
     reactionId: {
         type: Schema.Types.ObjectId, 
         default: () => new Types.ObjectId()
@@ -14,10 +19,6 @@ const reactionSchema = new Schema({
         type: String,
         required: true,
         maxLength: 280
-    },
-    username: {
-        type: String,
-        required: true
     },
     createdAt: {
         type: Date,
