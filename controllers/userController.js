@@ -79,35 +79,68 @@ module.exports = {
 	},
 	addToFriendList: async (req, res) => {
 		const { userId, friendId } = req.params;
-    try {
-      const user1 = await User.findOneAndUpdate(
-        { _id: userId },
-        { $push: { friends: friendId } },
-        { new: true, runValidators: true }
-      ).populate({
-        path: "friends",
-        select: "-__v",
-      });
-      const user2 = await User.findOneAndUpdate(
-        { _id: friendId },
-        { $push: { friends: userId } },
-        { new: true, runValidators: true }
-      )
-        .populate({
-          path: "friends",
-          select: "-__v",
-        })
+		try {
+			const user1 = await User.findOneAndUpdate(
+				{ _id: userId },
+				{ $push: { friends: friendId } },
+				{ new: true, runValidators: true }
+			).populate({
+				path: "friends",
+				select: "-__v",
+			});
+			const user2 = await User.findOneAndUpdate(
+				{ _id: friendId },
+				{ $push: { friends: userId } },
+				{ new: true, runValidators: true }
+			)
+				.populate({
+					path: "friends",
+					select: "-__v",
+				})
 
-        .select("-__v")
-        .then((userData) => {
-          if (!userData) {
-            res.status(404).json({ message: "No User found with this id!" });
-            return;
-          }
-          res.json(userData);
-        });
-    } catch (error) {
-      res.json(error);
-    }
-  },
+				.select("-__v")
+				.then((userData) => {
+					if (!userData) {
+						res.status(404).json({ message: "No User found with this id!" });
+						return;
+					}
+					res.json(userData);
+				});
+		} catch (error) {
+			res.json(error);
+		}
+	},
+	removefromFriendList: async (req, res) => {
+		const { userId, friendId } = req.params;
+		try {
+			const user1 = await User.findOneAndDelete(
+				{ _id: userId },
+				{ $push: { friends: friendId } },
+				{ new: true, runValidators: true }
+			).populate({
+				path: "friends",
+				select: "-__v",
+			});
+			const user2 = await User.findOneAndUpdate(
+				{ _id: friendId },
+				{ $pull: { friends: userId } },
+				{ new: true, runValidators: true }
+			)
+				.populate({
+					path: "friends",
+					select: "-__v",
+				})
+
+				.select("-__v")
+				.then((userData) => {
+					if (!userData) {
+						res.status(404).json({ message: "No User found with this id!" });
+						return;
+					}
+					res.json(userData);
+				});
+		} catch (error) {
+			res.json(error);
+		}
+	},
 };

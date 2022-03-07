@@ -3,14 +3,14 @@ const { Thought, User } = require('../models');
 module.exports = {
     addThought: async (req, res) => {
         const {
-            thoughtText,
+            userId,
             username,
-            userId
+            thoughtText,
         } = req.body;
         try {
             const newThought = await Thought.create({
-                thoughtText,
                 username,
+                thoughtText,
             })
                 .then(({ _id }) => {
                     return User.findOneAndUpdate(
@@ -25,11 +25,11 @@ module.exports = {
                         }
                     );
                 })
-                .then((thoughtData) => {
-                    res.json(thoughtData);
+                .then((newThought) => {
+                    res.json(newThought);
                 });
         } catch (e) {
-            console.log(e);
+            res.json(e);
         }
     },
     getAllThoughts: async (req, res) => {
@@ -60,8 +60,8 @@ module.exports = {
                 thoughtId,
                 { ...req.body },
                 {
-                    runValidators: true,
                     new: true,
+                    runValidators: true,
                 }
             );
             res.json(updatedThought);

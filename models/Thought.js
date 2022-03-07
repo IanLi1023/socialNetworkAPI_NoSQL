@@ -3,7 +3,7 @@ const moment = require('moment');
 const reactionSchema = require('./Reaction');
 
 const ThoughtSchema = new Schema({
-  userId: {
+  thoughtId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     index: true,
