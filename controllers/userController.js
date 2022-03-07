@@ -113,32 +113,42 @@ module.exports = {
 	removefromFriendList: async (req, res) => {
 		const { userId, friendId } = req.params;
 		try {
-			const user1 = await User.findOneAndDelete(
+			const user1 = await User.findOneAndUpdate(
 				{ _id: userId },
-				{ $push: { friends: friendId } },
+				{ $pull: { friends: friendId } },
 				{ new: true, runValidators: true }
-			).populate({
+			)
+			user1.populate({
 				path: "friends",
 				select: "-__v",
 			});
+
+			if (!user1) {
+				res.status(404).json({ message: "No User found with this id!" });
+				return;
+			}
 			const user2 = await User.findOneAndUpdate(
 				{ _id: friendId },
 				{ $pull: { friends: userId } },
 				{ new: true, runValidators: true }
 			)
-				.populate({
-					path: "friends",
-					select: "-__v",
-				})
+			user2.populate({
+				path: "friends",
+				select: "-__v",
+			})
 
-				.select("-__v")
-				.then((userData) => {
-					if (!userData) {
-						res.status(404).json({ message: "No User found with this id!" });
-						return;
-					}
-					res.json(userData);
-				});
+			// .select("-__v")
+			// .then((userData) => {
+			// 	res.json(userData);
+			// });
+
+			if (!user2) {
+				res.status(404).json({ message: "No User found with this id!" });
+				return;
+			}
+
+			res.json(user1);
+
 		} catch (error) {
 			res.json(error);
 		}

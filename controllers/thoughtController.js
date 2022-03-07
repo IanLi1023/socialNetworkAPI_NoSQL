@@ -12,22 +12,18 @@ module.exports = {
                 username,
                 thoughtText,
             })
-                .then(({ _id }) => {
-                    return User.findOneAndUpdate(
-                        {
-                            _id: userId
-                        },
-                        {
-                            $push: { thoughts: _id }
-                        },
-                        {
-                            new: true
-                        }
-                    );
-                })
-                .then((newThought) => {
-                    res.json(newThought);
-                });
+            User.findOneAndUpdate(
+                {
+                    _id: userId
+                },
+                {
+                    $push: { thoughts: newThought._id }
+                },
+                {
+                    new: true
+                }
+            );
+                    res.json(newThought);            
         } catch (e) {
             res.json(e);
         }
