@@ -137,11 +137,6 @@ module.exports = {
 				select: "-__v",
 			})
 
-			// .select("-__v")
-			// .then((userData) => {
-			// 	res.json(userData);
-			// });
-
 			if (!user2) {
 				res.status(404).json({ message: "No User found with this id!" });
 				return;
